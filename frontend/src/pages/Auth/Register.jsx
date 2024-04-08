@@ -28,12 +28,30 @@ const Register = () => {
     }
   }, [navigate, redirect, userInfo]);
 
+  const submitHandler = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Senha não está combinando.");
+    } else {
+      try {
+        const res = await register({ username, email, password }).unwrap();
+        dispatch(setCredientials({ ...res }));
+        navigate(redirect);
+        toast.success("Usuário registrado com sucesso.");
+      } catch (error) {
+        console.log(error);
+        toast.error(error.data.message);
+      }
+    }
+  };
+
   return (
     <section className="pl-[10rem] flex flex-wrap">
       <div className="mr-[4rem] mt-[5rem]">
         <h1 className="text-2xl font-semibold mb-4">Register</h1>
 
-        <form className="container w-[40rem]">
+        <form onSubmit={submitHandler} className="container w-[40rem]">
           <div className="my-[2rem]">
             <label
               htmlFor="name"
@@ -74,7 +92,7 @@ const Register = () => {
               Senha
             </label>
             <input
-              type="text"
+              type="password"
               id="password"
               className="mt-1 p-2 border rounded w-full"
               placeholder="Informe a senha"
